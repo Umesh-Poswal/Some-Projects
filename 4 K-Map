@@ -1,0 +1,184 @@
+#include<stdio.h>
+#include<iostream>
+#include<string.h>
+using namespace std;
+string ans="";
+char ume[45][4];
+int ii=0,jj=0;
+void c_check(char *k1,char *k2)   //check for one bit difference, if found put the result in ume[ ][]
+{
+	if(k1[0]==k2[0] && k1[1]==k2[1] && k1[2]==k2[2] && k1[3] != k2[3])
+	{
+	  ume[ii][0]=k1[0];ume[ii][1]=k2[1];ume[ii][2]=k1[2];ume[ii][3]='k';
+	  ii++;jj++;	
+	}
+	else if(k1[0]==k2[0] && k1[1]==k2[1] && k1[2]!=k2[2] && k1[3] == k2[3])
+	{
+	  ume[ii][0]=k1[0];ume[ii][1]=k2[1];ume[ii][2]='k';ume[ii][3]=k2[3];
+	  ii++;jj++;	
+	}
+	else if(k1[0]==k2[0] && k1[1]!=k2[1] && k1[2]==k2[2] && k1[3] == k2[3])
+	{
+	  ume[ii][0]=k1[0];ume[ii][1]='k';ume[ii][2]=k1[2];ume[ii][3]=k2[3];
+	  ii++;	jj++;
+	}
+	else if(k1[0]!=k2[0] && k1[1]==k2[1] && k1[2]==k2[2] && k1[3] == k2[3])
+	{
+	  ume[ii][0]='k';ume[ii][1]=k2[1];ume[ii][2]=k1[2];ume[ii][3]=k2[3];
+	  ii++;jj++;	
+	}
+	 
+}
+int shift(char kam[][4],int n)  // removes more than one occuences of same terms
+{
+	for(int i=0;i<n;i++){
+		for(int j=i+1;j<n;j++){
+		if(kam[i][0]==kam[j][0] && kam[i][1]==kam[j][1] && kam[i][2]==kam[j][2] && kam[i][3]==kam[j][3])
+		{
+			for(int k=j;k<n-1;k++){
+				for(int kk=0;kk<4;kk++)
+				kam[k][kk]=kam[k+1][kk];
+			}
+			j--;n--;
+		}	
+		}
+	}return n;
+}
+void cc_check(char *k1,char *k2)  // check for one bit differnce for lower index terms
+{                                 // jj is a flag to tell whether a match is found or not
+	
+	if(k1[0]==k2[0] && k1[1]==k2[1] && k1[2]==k2[2] && k1[3] != k2[3])jj++;
+	else if(k1[0]==k2[0] && k1[1]==k2[1] && k1[2]!=k2[2] && k1[3] == k2[3])jj++;
+	else if(k1[0]==k2[0] && k1[1]!=k2[1] && k1[2]==k2[2] && k1[3] == k2[3])jj++;
+	else if(k1[0]!=k2[0] && k1[1]==k2[1] && k1[2]==k2[2] && k1[3] == k2[3])jj++;
+	 
+}	
+
+void check(char kam[][4],int n)
+{    
+   ii=0;   for(int i=0;i<35;i++)   // ume is initialised to null characters 
+     for(int j=0;j<4;j++)          // to have only important data every time
+     ume[i][j]='\0';
+          
+	for(int i=0;i<n;i++){
+		jj=0;
+		for(int j=0;j<i;j++)
+		cc_check(kam[i],kam[j]);
+		for(int j=i+1;j<n;j++)
+			c_check(kam[i],kam[j]);
+		
+		if(jj==0){         // jj==0 ,shows that no 1-bit match found for a particular term
+			for(int ii=0;ii<4;ii++)//  so that is given to answer
+			ans+=kam[i][ii];
+			ans+=" + ";
+		}
+	}
+}
+void print(char kam[][4],int n){
+		for(int i=0;i<n;i++){
+		if(i%4==0)printf("\n");
+		for(int ii=0;ii<4;ii++)
+		printf("%c",kam[i][ii]);
+		printf(" + ");
+	}
+}
+int main()
+{   
+     int n;
+	do{
+	printf("\nHow many terms (Note that:w,x,y,z are compliments of a,b,c,d respectively)?");
+	scanf("%d",&n);
+	if(n<0 || n>16){
+		printf("\nWrong input !!");
+		return 131;
+	}
+	if(n==0){
+		printf("Thankyou very much!!\nAns : 0");
+		return 6131;
+	}
+	char kam[45][4];
+	f:
+	printf("Enter terms' numbers(min-terms numerical eq. i.e 0,1,2...etc..) :");
+	for(int i=0;i<n;i++)
+	{
+		int nn;
+		scanf("%d",&nn);
+		if(nn>15 || nn<0){
+			printf("\nWrong input !!\nPlease RE-");
+			goto f;
+		}
+		switch(nn){
+			case 0:
+				kam[i][0]='w';kam[i][1]='x';kam[i][2]='y';kam[i][3]='z';
+				break;
+			case 1:
+			    kam[i][0]='w';kam[i][1]='x';kam[i][2]='y';kam[i][3]='d';
+				break;
+			case 2:
+			    kam[i][0]='w';kam[i][1]='x';kam[i][2]='c';kam[i][3]='z';
+				break;
+			case 3:
+			    kam[i][0]='w';kam[i][1]='x';kam[i][2]='c';kam[i][3]='d';
+				break;
+			case 4:
+			    kam[i][0]='w';kam[i][1]='b';kam[i][2]='y';kam[i][3]='z';
+				break;
+			case 5:
+			    kam[i][0]='w';kam[i][1]='b';kam[i][2]='y';kam[i][3]='d';
+				break;
+			case 6:
+			    kam[i][0]='w';kam[i][1]='b';kam[i][2]='c';kam[i][3]='z';
+				break;
+			case 7:
+			    kam[i][0]='w';kam[i][1]='b';kam[i][2]='c';kam[i][3]='d';
+				break;
+			case 8:
+			    kam[i][0]='a';kam[i][1]='x';kam[i][2]='y';kam[i][3]='z';
+				break;
+			case 9:
+			    kam[i][0]='a';kam[i][1]='x';kam[i][2]='y';kam[i][3]='d';
+				break;
+			case 10:
+			    kam[i][0]='a';kam[i][1]='x';kam[i][2]='c';kam[i][3]='z';
+				break;
+			case 11:
+			    kam[i][0]='a';kam[i][1]='x';kam[i][2]='c';kam[i][3]='d';
+				break;
+			case 12:
+			    kam[i][0]='a';kam[i][1]='b';kam[i][2]='y';kam[i][3]='z';
+				break;
+			case 13:
+			    kam[i][0]='a';kam[i][1]='b';kam[i][2]='y';kam[i][3]='d';
+				break;
+			case 14:
+			    kam[i][0]='a';kam[i][1]='b';kam[i][2]='c';kam[i][3]='z';
+				break;
+			case 15:
+			    kam[i][0]='a';kam[i][1]='b';kam[i][2]='c';kam[i][3]='d';
+				break;		
+		}
+	}
+	printf("\n\nProvided input is :");
+   print(kam,n);printf(" 0 ");
+	for(int i=0;i<4;i++){
+     	n=shift(kam,n);
+	   check(kam,n);
+	   n=strlen(ume[0])/4;
+	   strcpy(kam[0],ume[0]);	   
+	   }
+	printf("\nAnswer is : \n");if(ans.size()==0)printf("1\n");
+	else{      // string.size() is function to find size of a string
+	int an=ans.size();
+	for(int i=0;i<an;i++){   // code to remove unwanted k's from answer
+		if(ans[i]=='k'){
+			for(int j=i;j<an;j++)
+			ans[j]=ans[j+1];
+			i--;an--;
+		}	
+	}
+	for(int i=0;i<an-2;i++)printf("%c",ans[i]);ans="";
+     }
+	 printf("\n\nTo continue press any interger save 1316");scanf("%d",&n);
+	 }while(n!=1316);
+	return 1316;
+}
