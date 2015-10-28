@@ -1,0 +1,250 @@
+/*
+ * By--Umesh Poswal(13CS01010)
+ * DEC Assignment
+ * 
+ * In this program I have made use of 5 gates namely And, Or, Not, Nand, Nor and these are represented by
+ *  numbers(i.e each gate type has a number associated with it) 1,2,3,4,5 respectively
+ *   
+ * and if there are n gates in total then gates are numbered from 0 to n-1
+ * 
+ * PLease note the input format of the program:-
+ *    1.Input two integers --number of inputs and number of gates
+ *    2.In build circuit method :-
+ *         input is of the format (i1,i2,i3,i4,i5,i6)
+ *         where i1=gate type, i2 is gate number   //user don't have to give i2
+ *         i3 is gate number whose output is given as input 1
+ *         i4 is gate number whose output is given as input 2
+ *         i5 and i6 are first and second inputs respectively from the input line
+ *         
+ *         
+ *         So if you are not using the inputs from the input lines or from gate output then give corresponding argument as '-1'
+ *         
+ *         N.B :- Give same input two times if you are using a Not gate 
+ *         
+ *         
+ *         
+ *         Input format to give a fault--user have to give three integers..
+ *               first integer=gate number
+ *               second integer=input line of gate  i.e input1 or input2 of gate
+ *         		 third integer=stuck value i.e 0 or 1
+ */
+import java.util.*;
+class Gates{
+	
+int Gtype,in1,in2,op;	
+}
+	
+public class circuit {
+
+public static void main(String args[]){
+	print("Please read the comments in code to know the exact input format\n\n\n");
+	Scanner in=new Scanner(System.in);
+	int i,g;
+	String str;
+	int []arr=new int[130];
+	boolean flag=false;
+	
+	print("Enter number of input lines and number of gates\n");
+	
+	i=in.nextInt();
+	g=in.nextInt();
+	
+	int []ans=new int[i];
+	int fault[]=new int[3];
+	print("Enter fault(please see input format in code)\n");
+	for(int k=0;k<3;k++)
+		fault[k]=in.nextInt();
+		
+	int list[]=new int[i];
+	Gates[] gate=new Gates[g];
+		
+	print("Enter gate types..\n");
+	for(int j=0;j<g;j++){
+		gate[j]=new Gates();
+	    gate[j].Gtype=in.nextInt();
+	    if(gate[j].Gtype<0 || gate[j].Gtype>5){
+	    	print("\nWrong Input !!  Gate types are from 1 to 5\n By default this gate has been made of type 1 i.e And gate\n");
+	    	gate[j].Gtype=1;
+	    }
+	}
+	print("Now build the Circuit...give gate type==-5 when finished");
+	int cou=0;
+	arr[cou]=in.nextInt();
+	while(arr[cou]!=-5){
+		cou++;
+		arr[cou]=in.nextInt();
+	}
+		
+	
+	int i1,i3,i4,i5,i6;
+
+	for(int t=0;t<Math.pow(2, i);t++){
+		str=Integer.toBinaryString(t);
+		for(int jj=0;jj<str.length();jj++)
+			list[i-str.length()+jj]=str.charAt(jj)-'0';
+					
+		cou=0;
+		int num=0;
+		i1=arr[cou];cou++;
+		while(i1!=-5){
+			
+			i3=arr[cou];cou++;
+			i4=arr[cou];cou++;
+			i5=arr[cou];cou++;
+			i6=arr[cou];cou++;
+			Activate(i1,num,i3,i4,i5,i6,list,gate);
+			i1=arr[cou];cou++;
+			num++;
+		}
+		int out1,out2;
+		out1=gate[g-1].op;
+		
+		cou=0;num=0;
+		i1=arr[cou];cou++;
+		while(i1!=-5){
+			
+			i3=arr[cou];cou++;
+			i4=arr[cou];cou++;
+			i5=arr[cou];cou++;
+			i6=arr[cou];cou++;
+			Justify(i1,num,i3,i4,i5,i6,list,gate,fault);
+			i1=arr[cou];cou++;
+			num++;
+		}
+		
+		out2=gate[g-1].op;
+		if(out1!=out2){
+			//print("\n");
+			flag=true;
+			for(int k=0;k<i;k++)
+            // print(list[k]+" ");
+				ans[k]=list[k];
+			break;
+		}
+	}
+	if(flag==true){
+		print("\nFault can be detected using test case:\n");
+		for(int k=0;k<i;k++)
+			print(""+ans[k]);
+	}
+	else print("\nGiven fault can't be detected !!!");
+	in.close();
+}
+public static void print(String str){
+	System.out.print(str);
+}
+public static void Activate(int i1,int i2,int i3,int i4,int i5,int i6,int[] list,Gates[] gate){
+	int ip1,ip2;
+	
+	if(i3==-1){
+		gate[i2].in1=list[i5];
+		ip1=list[i5];
+	}
+	else {
+		gate[i2].in1=gate[i3].op;
+		ip1=gate[i3].op;
+	}
+	if(i4==-1){
+		gate[i2].in2=list[i6];
+		ip2=list[i6];
+	}
+	else {
+		gate[i2].in2=gate[i4].op;
+		ip2=gate[i4].op;
+	}
+	
+	switch(i1){
+	case 1:
+		if(ip1==1)
+			gate[i2].op=ip2;
+		else 
+			gate[i2].op=0;
+		break;
+	
+	case 2:
+		if(ip1==0)
+			gate[i2].op=ip2;
+		else gate[i2].op=1;
+		break;
+		
+	case 3:
+		if(ip1==0)
+			gate[i2].op=1;
+		else if(ip1==1) gate[i2].op=0;
+		 break;
+	case 4:
+		if(ip1==1 && ip2==1)
+			gate[i2].op=0;
+		else gate[i2].op=1;
+		break;
+		
+	case 5:
+		if(ip1==0 && ip2==0)
+			gate[i2].op=1;
+		else gate[i2].op=0;
+		break;
+	}
+}
+public static void Justify(int i1,int i2,int i3,int i4,int i5,int i6,int[] list,Gates[] gate,int [] fault){
+	int ip1,ip2;
+	
+	if(i3==-1){
+		gate[i2].in1=list[i5];
+		ip1=list[i5];
+	}
+	else {
+		gate[i2].in1=gate[i3].op;
+		ip1=gate[i3].op;
+	}
+	if(i4==-1){
+		gate[i2].in2=list[i6];
+		ip2=list[i6];
+	}
+	else {
+		gate[i2].in2=gate[i4].op;
+		ip2=gate[i4].op;
+	}
+	
+	
+	if(i2==fault[0])
+	{
+		if(i1==3)ip1=fault[2];
+		else {if(fault[1]==1)
+			
+		ip1=fault[2];
+		else ip2=fault[2];
+	}
+	}
+	switch(i1){
+	case 1:
+		if(ip1==1)
+			gate[i2].op=ip2;
+		else 
+			gate[i2].op=0;
+		break;
+	
+	case 2:
+		if(ip1==0)
+			gate[i2].op=ip2;
+		else gate[i2].op=1;
+		break;
+		
+	case 3:
+		if(ip1==0)
+			gate[i2].op=1;
+		else if(ip1==1)gate[i2].op=0;
+		  break;
+	case 4:
+		if(ip1==1 && ip2==1)
+			gate[i2].op=0;
+		else gate[i2].op=1;
+		break;
+		
+	case 5:
+		if(ip1==0 && ip2==0)
+			gate[i2].op=1;
+		else gate[i2].op=0;
+		break;
+	}
+}
+}
